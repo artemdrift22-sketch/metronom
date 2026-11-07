@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.node_secret
+data.json
+*.session
+hub/config.env
+hub/hub.db
+hub/ads.json
+guard/config.env
+guard/guard.db*
