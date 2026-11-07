@@ -1,0 +1,14 @@
+# Метроном · личный сервер. Кнопка «Deploy to Render» создаёт его по этому файлу — бесплатно.
+services:
+  - type: web
+    name: metronom
+    runtime: python
+    plan: free
+    region: frankfurt
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -u node.py
+    healthCheckPath: /health
+    autoDeploy: false
+    envVars:
+      - key: NODE_SECRET
+        generateValue: true
