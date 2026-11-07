@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Метроном — вход</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0d1626;color:#e8eef5;font:16px/1.45 -apple-system,"Segoe UI",Roboto,Arial,sans-serif;min-height:100vh;display:flex;justify-content:center}
+.w{width:100%;max-width:440px;padding:22px 16px 40px}
+.logo{display:flex;align-items:center;gap:12px;margin:6px 0 18px}
+.logo svg{width:46px;height:46px;flex:none}
+.logo b{font-size:22px}.logo span{display:block;color:#9fb0c6;font-size:13px}
+.card{background:#16243d;border:1px solid #24375a;border-radius:16px;padding:18px;margin:0 0 14px}
+h2{font-size:19px;margin:0 0 10px}
+p{margin:8px 0;color:#c9d5e3}.m{color:#8fa3bd;font-size:13.5px}
+input{width:100%;font-size:19px;padding:13px 14px;border-radius:11px;border:1px solid #2f4670;background:#0f1b30;color:#fff;margin:6px 0 10px;outline:none}
+input:focus{border-color:#3fb3a5}
+button,.btn{display:block;width:100%;text-align:center;font-size:17px;font-weight:600;padding:13px;border:0;border-radius:11px;background:#3fb3a5;color:#0d1626;cursor:pointer;text-decoration:none}
+button:disabled{opacity:.6}
+.ghost{background:transparent;color:#9fd9d1;border:1px solid #2f4670;margin-top:10px;font-weight:500}
+.tabs{display:flex;gap:6px;margin:0 0 12px}.tabs button{background:#0f1b30;color:#9fb0c6;border:1px solid #24375a;font-size:15px;padding:10px}
+.tabs button.on{background:#24375a;color:#fff}
+.err{background:#3b1d24;border:1px solid #7a3340;color:#ffd5db;border-radius:11px;padding:10px 12px;margin:0 0 12px;font-size:14.5px}
+.ok{background:#173a33;border:1px solid #2a8c82;border-radius:11px;padding:10px 12px;margin:0 0 12px}
+.qr{background:#fff;border-radius:12px;padding:8px;width:260px;height:260px;margin:6px auto 10px;display:flex;align-items:center;justify-content:center}
+.qr img{width:100%;height:100%}
+ol{padding-left:20px;margin:8px 0;color:#c9d5e3}li{margin:4px 0}
+.hide{display:none}
+.keys{background:#0f1b30;border:1px solid #24375a;border-radius:12px;padding:12px;margin:0 0 14px}
+.keys h3{font-size:16px;margin:0 0 4px}.keys input{font-size:16px;padding:11px 12px;margin:4px 0 8px}
+.keys.bad{border-color:#7a3340}
+details{margin:6px 0 4px}summary{cursor:pointer;color:#9fd9d1;font-size:14.5px}
+details ol{font-size:14.5px}.tip{background:#2b2a1a;border:1px solid #6b5f2a;border-radius:10px;padding:8px 10px;font-size:13.5px;color:#f1e6b8;margin:8px 0 0}
+.saved{font-size:14px;color:#9fd9d1;margin:0 0 12px}.saved a{color:#8fa3bd}
+code{background:#0d1626;border-radius:5px;padding:1px 5px}
+.lock{font-size:13px;color:#8fa3bd;text-align:center;margin-top:16px}
+</style></head><body><div class="w">
+<div class="logo"><svg viewBox="0 0 640 640"><rect width="640" height="640" rx="140" fill="#1c2d4a"/><g transform="translate(320 330) scale(.95) translate(-320 -322)"><path d="M284 150h72q10 0 13 10l65 292q3 16-13 16H219q-16 0-13-16l65-292q3-10 13-10z" fill="#3fb3a5"/><path d="M300 196h40l42 208H258z" fill="#14233b"/><rect x="188" y="462" width="264" height="34" rx="12" fill="#e8eef5"/><line x1="320" y1="420" x2="252" y2="176" stroke="#e8eef5" stroke-width="16" stroke-linecap="round"/><rect x="262" y="262" width="40" height="34" rx="9" fill="#e2a85a" transform="rotate(-15.6 282 282)"/><circle cx="320" cy="420" r="18" fill="#e8eef5"/></g></svg>
+<div><b>Метроном</b><span>твой личный сервер авторассылки</span></div></div>
+
+<div id="err" class="err hide"></div>
+
+<div id="s-cfg" class="card hide"><h2>Сервер не настроен</h2><p>Владелец бота не указал бота в settings.json (hub_bot). Напиши в поддержку бота.</p></div>
+
+<div id="s-start" class="card hide">
+ <h2>Войди в Telegram</h2>
+ <p id="relogin" class="hide">⚠️ Вход слетел — войди заново <b>тем же аккаунтом</b>. Настройки рассылки сохранились.</p>
+ <div id="keys" class="keys hide">
+  <h3>Шаг 1. Твои ключи Telegram</h3>
+  <p class="m">Telegram разрешает рассылку с аккаунта только с ключами api_id и api_hash. Они бесплатные, делаются один раз за 2 минуты.</p>
+  <details id="howto"><summary>Где взять ключи — инструкция</summary>
+   <ol>
+    <li>Открой <a href="https://my.telegram.org" target="_blank" rel="noopener" style="color:#9fd9d1">my.telegram.org</a> (удобнее с компьютера).</li>
+    <li>Введи номер своего Telegram с <code>+</code>. Код придёт <b>в приложение Telegram</b>, не SMS — впиши его.</li>
+    <li>Нажми <b>API development tools</b>.</li>
+    <li>Заполни: App title — <code>Metronom</code>, Short name — любое латиницей, например <code>metronom2026</code>, Platform — <b>Desktop</b>. Остальное можно не заполнять. Нажми <b>Create application</b>.</li>
+    <li>Скопируй сюда <b>App api_id</b> (цифры) и <b>App api_hash</b> (32 символа).</li>
+   </ol>
+   <div class="tip">💡 Если my.telegram.org пишет «ERROR» или не присылает код: включи или выключи VPN, попробуй другой браузер или зайди позже — это частая и временная ошибка самого сайта.</div>
+  </details>
+  <input id="api_id" inputmode="numeric" autocomplete="off" placeholder="api_id, например 1234567">
+  <input id="api_hash" autocomplete="off" spellcheck="false" placeholder="api_hash — 32 символа">
+  <p class="m" style="margin:0">🔒 Ключи сохраняются только на этом сервере (и в зашифрованной копии). Никому их не пересылай.</p>
+ </div>
+ <p id="keys-ok" class="saved hide">✅ Ключи Telegram уже сохранены. <a href="#" id="keys-edit" onclick="EDIT=true;render();return false">Заменить</a></p>
+ <h3 id="step2" class="hide" style="font-size:16px;margin:0 0 8px">Шаг 2. Вход в аккаунт</h3>
+ <div class="tabs"><button id="t-ph" class="on" onclick="tab('ph')">По номеру</button><button id="t-qr" onclick="tab('qr')">QR-код (с компьютера)</button></div>
+ <div id="p-ph">
+  <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 999 123-45-67">
+  <button id="b-ph" onclick="send('phone',Object.assign({phone:v('phone')},keys()),this)">Получить код</button>
+  <p class="m">Код придёт в приложение Telegram — в чат «Telegram».</p>
+ </div>
+ <div id="p-qr" class="hide">
+  <p>Открой эту страницу на компьютере, а QR-код отсканируй телефоном:</p>
+  <button onclick="send('qr',keys(),this)">Показать QR-код</button>
+ </div>
+ <p class="m" id="wait-note">Уже входил, а сервер перезапустился? Ничего не делай — бот восстановит вход сам в течение 5 минут.</p>
+</div>
+
+<div id="s-code" class="card hide">
+ <h2>Код из Telegram</h2>
+ <p>Открой Telegram → чат «Telegram» → там 5 цифр. Вернись сюда и введи их.</p>
+ <input id="code" inputmode="numeric" autocomplete="one-time-code" placeholder="12345">
+ <button onclick="send('code',{code:v('code')},this)">Войти</button>
+ <button class="ghost" onclick="cancel()">Другой номер</button>
+</div>
+
+<div id="s-pw" class="card hide">
+ <h2>Облачный пароль</h2>
+ <p>У аккаунта включена двухэтапная проверка — введи свой облачный пароль Telegram.</p>
+ <input id="pw" type="password" autocomplete="current-password" placeholder="Пароль">
+ <button onclick="send('password',{password:v('pw')},this)">Войти</button>
+ <button class="ghost" onclick="cancel()">Начать заново</button>
+</div>
+
+<div id="s-qr" class="card hide">
+ <h2>Отсканируй QR-код</h2>
+ <div class="qr"><img id="qrimg" alt="QR"></div>
+ <ol><li>Telegram на телефоне → <b>Настройки</b></li><li><b>Устройства</b> → <b>Подключить устройство</b></li><li>Наведи камеру на код</li></ol>
+ <button class="ghost" onclick="cancel()">Назад</button>
+</div>
+
+<div id="s-qrold" class="card hide">
+ <h2>QR-код устарел</h2>
+ <button onclick="send('qr',keys(),this)">Показать новый</button>
+ <button class="ghost" onclick="cancel()">Назад</button>
+</div>
+
+<div id="s-done" class="card hide">
+ <div class="ok">✅ Аккаунт подключён: <b id="me"></b></div>
+ <p>Сервер работает сам, 24/7. Эту страницу можно закрыть.</p>
+ <p><b>Всё остальное — в боте:</b> текст рекламы, чаты, расписание.</p>
+ <p id="pairerr" class="err hide"></p>
+ <a id="botlink" class="btn" href="#">Открыть бота</a>
+</div>
+
+<div class="lock">🔒 Вход и ключи хранятся только на этом сервере. У бота — зашифрованная копия для перезапусков, ключ от неё есть только у тебя в Render.</div>
+</div>
+<script>
+const BOT="{{BOT}}";let S={},QV=-1,TAB='ph',busy=false,EDIT=false,BAD=false;
+const $=id=>document.getElementById(id), v=id=>$(id).value;
+function show(id){for(const s of ['cfg','start','code','pw','qr','qrold','done'])$('s-'+s).classList.toggle('hide',s!==id)}
+function tab(t){TAB=t;$('p-ph').classList.toggle('hide',t!=='ph');$('p-qr').classList.toggle('hide',t!=='qr');$('t-ph').classList.toggle('on',t==='ph');$('t-qr').classList.toggle('on',t==='qr')}
+function needKeys(){return !S.api_fixed&&(!S.has_api||EDIT||BAD)}
+function keys(){if(!needKeys())return {};return {api_id:v('api_id').replace(/\s/g,''),api_hash:v('api_hash').replace(/\s/g,'')}}
+function err(t){$('err').textContent=t||'';$('err').classList.toggle('hide',!t)}
+async function poll(){try{const r=await fetch('/s',{cache:'no-store'});S=await r.json();render()}catch(e){}}
+function render(){
+ if(!S.configured)return show('cfg');
+ if(S.state==='running'){show('done');const m=S.me||{};$('me').textContent=(m.name||'')+(m.username?' (@'+m.username+')':'');
+  $('botlink').href='https://t.me/'+(S.bot||BOT);$('botlink').textContent='Открыть @'+(S.bot||BOT);
+  $('pairerr').textContent=S.pair_error?S.pair_error+' Напиши боту /start.':'';$('pairerr').classList.toggle('hide',!S.pair_error);return}
+ const nk=needKeys();$('keys').classList.toggle('hide',!nk);$('keys').classList.toggle('bad',BAD);
+ $('keys-ok').classList.toggle('hide',nk||!!S.api_fixed);$('step2').classList.toggle('hide',!nk);
+ if(nk&&!S.has_api&&!v('api_id'))$('howto').open=true;
+ $('relogin').classList.toggle('hide',S.state!=='relogin');$('wait-note').classList.toggle('hide',S.state==='relogin');
+ if(S.step==='code')show('code');else if(S.step==='password')show('pw');
+ else if(S.step==='qr'||S.step==='done'){show('qr');if(S.qv!==QV){QV=S.qv;$('qrimg').src='/qr.svg?'+Date.now()}}
+ else if(S.step==='qr_old')show('qrold');else show('start');
+ if(S.error&&!busy)err(S.error);
+}
+async function send(step,body,btn){if(busy)return;busy=true;err('');if(btn)btn.disabled=true;
+ try{const r=await fetch('/login/'+step,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const j=await r.json();if(!j.ok){err(j.error||'Ошибка');if(j.bad_api){BAD=true;$('howto').open=true}}
+  else if(step==='phone'||step==='qr'){BAD=false}}catch(e){err('Нет связи с сервером. Попробуй ещё раз.')}
+ busy=false;if(btn)btn.disabled=false;QV=-1;await poll()}
+async function cancel(){await fetch('/login/cancel',{method:'POST'});err('');await poll()}
+document.addEventListener('keydown',e=>{if(e.key!=='Enter')return;const a=document.activeElement&&document.activeElement.id;
+ if(a==='phone'||a==='api_hash')$('b-ph').click();if(a==='code')send('code',{code:v('code')});if(a==='pw')send('password',{password:v('pw')})});
+poll();setInterval(poll,2000);
+</script></body></html>
