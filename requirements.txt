@@ -1,0 +1,4 @@
+telethon>=1.40,<2
+aiohttp>=3.9,<4
+cryptography>=42
+segno>=1.6
